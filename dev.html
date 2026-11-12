@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>XVX TIMAXO Dev</title>
+<style>
+:root{--bg:#000;--card:#111114;--line:#2a2a30;--field:#050507;--text:#f2f2f4;--muted:#a9a9b2;--red:#ff1c25;--warn:#f0b13c;--ok:#4ade80}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Roboto,system-ui,-apple-system,"Segoe UI","Noto Naskh Arabic",Tahoma,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 40px}
+.hidden{display:none!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 21px 24px;margin:0 0 18px}
+h1{margin:0 0 6px;font-size:26px}
+h1 span{color:var(--red)}
+h2{margin:0 0 16px;font-size:19px}
+p{color:var(--muted);line-height:1.8;margin:6px 0}
+label{display:block;margin:14px 0 8px;font-size:15px}
+input,textarea{display:block;width:100%;background:var(--field);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:0 14px;font:inherit;font-size:16px;outline:none}
+input{height:48px}
+textarea{padding:12px 14px;min-height:90px;resize:vertical;line-height:1.7}
+input:focus,textarea:focus{border-color:#fff}
+button{font:inherit;cursor:pointer;border:0}
+.primary{background:var(--red);color:#fff;border-radius:14px;height:48px;padding:0 22px;font-size:16px;font-weight:600;width:100%;margin-top:14px}
+.ghost{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px}
+.err{color:#ff6b70;font-size:14px;min-height:1.2em;margin:10px 0 0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 18px}
+.top small{color:var(--red);letter-spacing:3px;font-weight:800;font-size:12px}
+.login{min-height:78vh;display:flex;align-items:center}
+.login .card{width:100%}
+
+/* maintenance toggle */
+.state{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;font-size:14px;font-weight:700;background:#16452d;color:#9df2b0}
+.pill.on{background:#4a3a10;color:var(--warn)}
+.pill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.sw{position:relative;width:74px;height:40px;border-radius:99px;background:#2a2a30;flex:none;transition:background .2s}
+.sw::after{content:"";position:absolute;top:4px;right:4px;width:32px;height:32px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw[aria-checked="true"]{background:var(--warn)}
+.sw[aria-checked="true"]::after{transform:translateX(-34px)}
+.sw:disabled{opacity:.5}
+.meta{font-size:13px;color:var(--muted);margin-top:12px}
+.warnbox{background:#2a2110;border:1px solid #5a4514;color:var(--warn);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.8;margin:0 0 18px}
+.warnbox code{direction:ltr;unicode-bidi:embed;background:#00000055;padding:1px 6px;border-radius:6px}
+
+/* preview of the banner (same look as on the main site) */
+.mbar{position:relative;background:#2a2110;color:var(--warn);padding:14px 16px 20px;display:flex;align-items:center;gap:12px;font-size:15px;line-height:1.6;border-radius:12px;overflow:hidden}
+.mbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:repeating-linear-gradient(90deg,#f0b13c 0 14px,transparent 14px 26px)}
+.mbar i{flex:none;width:34px;height:34px;background:var(--warn);color:#1a1204;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:20px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px))}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#17171c;border:1px solid var(--red);padding:12px 18px;font-size:14px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section id="login" class="login">
+    <div class="card">
+      <h1>XVX TIMAXO <span>·</span> Dev</h1>
+      <p>لوحة المطور</p>
+      <form id="loginForm" autocomplete="off">
+        <label for="u">اسم المستخدم</label>
+        <input id="u" type="text" autocomplete="username" required>
+        <label for="p">كلمة السر</label>
+        <input id="p" type="password" autocomplete="current-password" required>
+        <button class="primary" type="submit">دخول</button>
+        <p class="err" id="lerr"></p>
+      </form>
+    </div>
+  </section>
+
+  <div id="dash" class="hidden">
+    <header class="top">
+      <div><small>XVX TIMAXO</small><h1 style="font-size:22px;margin:2px 0">لوحة المطور</h1></div>
+      <button class="ghost" id="logout" type="button">تسجيل الخروج</button>
+    </header>
+
+    <div class="warnbox hidden" id="localWarn">
+      الربط مع الموقع الرئيسي غير مفعّل بعد: ما في رابط قاعدة بيانات. التغييرات الحين بتظهر بنفس المتصفح فقط.
+      ضع رابط Firebase في المتغير <code>DB_URL</code> داخل هذا الملف وفي المتغير <code>MAINT_URL</code> داخل ملف الموقع الرئيسي.
+    </div>
+
+    <section class="card">
+      <h2>وضع الصيانة</h2>
+      <div class="state">
+        <span class="pill" id="pill"><i></i><span id="pillTxt">...</span></span>
+        <button class="sw" id="sw" role="switch" aria-checked="false" aria-label="تفعيل الصيانة"></button>
+      </div>
+      <p class="meta" id="pz"></p>
+      <p class="meta" id="meta">عند التفعيل: يظهر الشريط الأصفر أعلى الموقع الرئيسي، ويتوقف كل شي فيه، ووقت الأكواد يتجمد. عند الإيقاف يرجع يشتغل والأكواد تكمل من وقتها المتبقي.</p>
+    </section>
+
+    <section class="card">
+      <h2>رسالة الصيانة</h2>
+      <textarea id="msg" maxlength="200"></textarea>
+      <button class="primary" id="saveMsg" type="button">حفظ الرسالة</button>
+      <label>معاينة الشريط</label>
+      <div class="mbar"><i>!</i><span id="prev"></span></div>
+    </section>
+  </div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  /* رابط قاعدة بيانات Firebase، مثال: https://اسم-مشروعك-default-rtdb.firebaseio.com/maintenance.json
+     يجب أن يكون نفس الرابط الموجود في MAINT_URL داخل XVX_TIMAXO.html */
+  var DB_URL = "";
+
+  var USER = "nasri", PH = "de585881a59b5011741347388f8b04a2c51182e94323da68ce0c4051701db32d";
+  var KEY = "xvx_maint_v1", SESS = "xvx_dev_in";
+  var DEFAULT_MSG = "نقوم بأعمال الصيانة. كل شيء متوقف مؤقتاً حتى نعود.";
+  var $ = function (s) { return document.querySelector(s); };
+  var state = { on: false, msg: DEFAULT_MSG }, busy = false, tt;
+
+  function toast(t) { var e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(tt); tt = setTimeout(function () { e.classList.remove("show"); }, 2400); }
+  async function sha(s) { var b = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s))); return Array.from(b, function (x) { return x.toString(16).padStart(2, "0"); }).join(""); }
+  function readLocal() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+
+  function paint() {
+    var on = !!state.on;
+    $("#sw").setAttribute("aria-checked", String(on));
+    $("#pill").classList.toggle("on", on);
+    $("#pillTxt").textContent = on ? "الصيانة مفعّلة" : "الموقع يعمل";
+    $("#prev").textContent = $("#msg").value.trim() || DEFAULT_MSG;
+    paintPz();
+  }
+  function fmt(ms) { var t = Math.floor(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60, p = function (n) { return String(n).padStart(2, "0"); }; return p(h) + ":" + p(m) + ":" + p(s); }
+  function paintPz() { var ms = (state.total || 0) + (state.on && state.since ? Math.max(0, Date.now() - state.since) : 0); $("#pz").textContent = "إجمالي وقت تجميد الأكواد: " + fmt(ms); }
+  setInterval(paintPz, 1000);
+
+  async function pull() {
+    try {
+      if (!DB_URL) { var l = readLocal(); if (l) state = { on: !!l.on, msg: l.msg || DEFAULT_MSG, since: l.since || 0, total: l.total || 0 }; }
+      else {
+        var r = await fetch(DB_URL + (DB_URL.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now(), { cache: "no-store" });
+        var d = await r.json();
+        state = { on: !!(d && d.on), msg: (d && d.msg) || DEFAULT_MSG, since: (d && d.since) || 0, total: (d && d.total) || 0 };
+      }
+    } catch (e) {}
+    if (document.activeElement !== $("#msg")) $("#msg").value = state.msg;
+    paint();
+  }
+
+  async function push(next) {
+    var body = { on: !!next.on, msg: next.msg || DEFAULT_MSG, ts: Date.now(), since: next.since || 0, total: next.total || 0 };
+    if (!DB_URL) { localStorage.setItem(KEY, JSON.stringify(body)); return; }
+    var url = DB_URL;
+    var r = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error("fail " + r.status);
+  }
+
+  async function save(next, okMsg) {
+    if (busy) return; busy = true; $("#sw").disabled = true;
+    try { await push(next); state = { on: !!next.on, msg: next.msg || DEFAULT_MSG, since: next.since || 0, total: next.total || 0 }; paint(); toast(okMsg); }
+    catch (e) { toast("فشل الحفظ. تأكد من الرابط وقواعد القاعدة"); }
+    finally { busy = false; $("#sw").disabled = false; }
+  }
+
+  function nextState(turnOn, msg) {
+    var now = Date.now(), total = state.total || 0, since = state.since || 0;
+    if (turnOn && !state.on) since = now;
+    if (!turnOn && state.on) { total += Math.max(0, now - (state.since || now)); since = 0; }
+    return { on: turnOn, msg: msg, since: since, total: total };
+  }
+  $("#sw").addEventListener("click", async function () {
+    await pull();
+    var turnOn = !state.on;
+    save(nextState(turnOn, $("#msg").value.trim() || state.msg), turnOn ? "تم تفعيل الصيانة (وقت الأكواد متجمد)" : "تم إيقاف الصيانة (الأكواد كملت من وقتها)");
+  });
+  $("#saveMsg").addEventListener("click", async function () {
+    await pull();
+    save({ on: state.on, msg: $("#msg").value.trim() || DEFAULT_MSG, since: state.since, total: state.total }, "تم حفظ الرسالة");
+  });
+  $("#msg").addEventListener("input", function () { $("#prev").textContent = $("#msg").value.trim() || DEFAULT_MSG; });
+
+  function showDash() {
+    $("#login").classList.add("hidden"); $("#dash").classList.remove("hidden");
+    $("#localWarn").classList.toggle("hidden", !!DB_URL);
+    try { sessionStorage.setItem(SESS, "1"); } catch (e) {}
+    pull();
+  }
+  $("#loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); $("#lerr").textContent = "";
+    if ($("#u").value.trim() === USER && (await sha($("#p").value)) === PH) { $("#p").value = ""; showDash(); }
+    else $("#lerr").textContent = "اسم المستخدم أو كلمة المرور غير صحيحة";
+  });
+  $("#logout").addEventListener("click", function () {
+    try { sessionStorage.removeItem(SESS); } catch (e) {}
+    $("#dash").classList.add("hidden"); $("#login").classList.remove("hidden");
+  });
+
+  setInterval(function () { if (!$("#dash").classList.contains("hidden") && !busy) pull(); }, 5000);
+  try { if (sessionStorage.getItem(SESS) === "1") showDash(); } catch (e) {}
+})();
+</script>
+</body>
+</html>
